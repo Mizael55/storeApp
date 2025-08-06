@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:store_app/constants/categories.dart';
 import 'package:store_app/theme/app_colors.dart';
 import 'package:store_app/utils/custom_category_dropdown.dart';
@@ -19,6 +20,62 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final _descriptionController = TextEditingController();
   File? _selectedImage;
   String _selectedCategory = productCategories.first.value;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: source,
+        maxWidth: 1800,
+        maxHeight: 1800,
+        imageQuality: 85,
+      );
+
+      if (image != null) {
+        setState(() {
+          _selectedImage = File(image.path);
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al seleccionar imagen: ${e.toString()}'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+  }
+
+  void _showImageSourceDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Seleccionar imagen'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.photo_library),
+                  title: const Text('Galería'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(ImageSource.gallery);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.camera_alt),
+                  title: const Text('Cámara'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(ImageSource.camera);
+                  },
+                ),
+              ],
+            ),
+          ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,10 +90,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
             color: AppColors.textPrimary,
           ),
         ),
-        centerTitle: true,
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        scrolledUnderElevation: 1,
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
         actions: [
           IconButton(
@@ -45,11 +98,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
               size: 28,
               color: AppColors.secondary,
             ),
-            onPressed: () {}, // La lógica se manejará desde el widget padre
+            onPressed: _saveProduct,
           ),
         ],
       ),
-      backgroundColor: AppColors.background,
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         child: Form(
@@ -59,9 +111,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
             children: [
               // Sección de imagen
               GestureDetector(
-                onTap: () {
-                  
-                }, // Lógica manejada externamente
+                onTap: _showImageSourceDialog,
                 child: Container(
                   height: 200,
                   decoration: BoxDecoration(
@@ -98,13 +148,35 @@ class _AddProductScreenState extends State<AddProductScreen> {
                               ),
                             ],
                           )
-                          : ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
-                            child: Image.file(
-                              _selectedImage!,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                            ),
+                          : Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: Image.file(
+                                  _selectedImage!,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                ),
+                              ),
+                              Positioned(
+                                top: 8,
+                                right: 8,
+                                child: IconButton(
+                                  icon: const Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                  ),
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: Colors.black54,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _selectedImage = null;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                 ),
               ),
@@ -136,7 +208,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Selector de categoría y agrega que diga selecciona una categoría
+              // Selector de categoría
               CustomCategoryDropdown(
                 value: _selectedCategory,
                 onChanged: (value) {
@@ -161,23 +233,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
               // Botón de guardar
               ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    // Aquí se manejará la lógica de guardar el producto
-                    // Por ejemplo, llamar a un método del widget padre o bloc
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Producto guardado exitosamente'),
-                      ),
-                    );
-                  }else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Por favor, completa todos los campos'),
-                      ),
-                    );
-                  }
-                }, // Lógica manejada externamente
+                onPressed: _saveProduct,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.secondary,
                   foregroundColor: AppColors.buttonText,
@@ -201,6 +257,33 @@ class _AddProductScreenState extends State<AddProductScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _saveProduct() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      if (_selectedImage == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Por favor seleccione una imagen'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+        return;
+      }
+
+      // Aquí iría la lógica para guardar el producto
+      // Por ejemplo, llamar a un método del widget padre o bloc
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Producto guardado exitosamente'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+
+      // Opcional: regresar a la pantalla anterior después de guardar
+      // Navigator.pop(context);
+    }
   }
 
   @override
