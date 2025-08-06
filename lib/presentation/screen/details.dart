@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:store_app/models/product.dart';
-import 'package:store_app/screen/cart.dart';
+import 'package:store_app/presentation/screen/cart.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Product product;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:store_app/theme/app_colors.dart';
-import '../widgets/widgets.dart';
+import '../../widgets/widgets.dart';
 
 class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});

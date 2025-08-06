@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:store_app/data/db.dart';
-import 'package:store_app/screen/addproduct.dart';
-import 'package:store_app/screen/cart.dart';
-import 'package:store_app/screen/details.dart';
+import 'package:store_app/presentation/screen/addproduct.dart';
+import 'package:store_app/presentation/screen/cart.dart';
+import 'package:store_app/presentation/screen/details.dart';
 import 'package:store_app/widgets/productcard.dart';
 
 class ProductCatalogScreen extends StatefulWidget {
