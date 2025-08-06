@@ -7,7 +7,6 @@ abstract class AuthEvent extends Equatable {
   List<Object> get props => [];
 }
 
-// Añade esta clase que falta:
 class SignUpWithEmailAndPasswordRequested extends AuthEvent {
   final String email;
   final String password;
@@ -23,4 +22,13 @@ class SignUpWithEmailAndPasswordRequested extends AuthEvent {
 
   @override
   List<Object> get props => [email, password, fullName, userType];
+}
+
+class SignUpWithGoogleRequested extends AuthEvent {
+  final String userType; // 'user' o 'seller'
+
+  const SignUpWithGoogleRequested({required this.userType});
+
+  @override
+  List<Object> get props => [userType];
 }

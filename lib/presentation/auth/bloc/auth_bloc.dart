@@ -10,10 +10,9 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository authRepository;
 
-  AuthBloc({required this.authRepository}) : super(AuthInitial()) {
-    on<SignUpWithEmailAndPasswordRequested>(
-      _onSignUpWithEmailAndPasswordRequested,
-    );
+ AuthBloc({required this.authRepository}) : super(AuthInitial()) {
+    on<SignUpWithEmailAndPasswordRequested>(_onSignUpWithEmailAndPasswordRequested);
+    on<SignUpWithGoogleRequested>(_onSignUpWithGoogleRequested);
   }
 
   Future<void> _onSignUpWithEmailAndPasswordRequested(
@@ -51,4 +50,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthFailure('Error inesperado: ${e.toString()}'));
     }
   }
+
+  Future<void> _onSignUpWithGoogleRequested(
+    SignUpWithGoogleRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+    try {
+      final user = await authRepository.signUpWithGoogle(
+        userType: event.userType,
+      );
+      emit(AuthSignUpSuccess(user));
+    } catch (e) {
+      emit(AuthFailure('Error al registrar con Google: ${e.toString()}'));
+    }
+  }
+
 }

@@ -208,7 +208,19 @@ class _SignupTabState extends State<SignupTab> {
                       elevation: 1,
                     ),
                     onPressed: () {
-                      // Lógica para inicio con Google
+                      if (userType != null) {
+                        context.read<AuthBloc>().add(
+                          SignUpWithGoogleRequested(userType: userType!),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Por favor selecciona un tipo de cuenta',
+                            ),
+                          ),
+                        );
+                      }
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
