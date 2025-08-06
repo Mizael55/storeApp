@@ -12,7 +12,7 @@ class AuthScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
-            'Bienvenido a APP Tiendas',
+            'Bienvenidos/as',
             style: TextStyle(color: AppColors.textPrimary),
           ),
           centerTitle: true,

@@ -10,10 +10,14 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository authRepository;
 
- AuthBloc({required this.authRepository}) : super(AuthInitial()) {
-    on<SignUpWithEmailAndPasswordRequested>(_onSignUpWithEmailAndPasswordRequested);
+  AuthBloc({required this.authRepository}) : super(AuthInitial()) {
+    on<SignUpWithEmailAndPasswordRequested>(
+      _onSignUpWithEmailAndPasswordRequested,
+    );
     on<SignUpWithGoogleRequested>(_onSignUpWithGoogleRequested);
-    on<LoginWithEmailAndPasswordRequested>(_onLoginWithEmailAndPasswordRequested);
+    on<LoginWithEmailAndPasswordRequested>(
+      _onLoginWithEmailAndPasswordRequested,
+    );
     on<LoginWithGoogleRequested>(_onLoginWithGoogleRequested);
   }
 
@@ -68,7 +72,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
- Future<void> _onLoginWithEmailAndPasswordRequested(
+  Future<void> _onLoginWithEmailAndPasswordRequested(
     LoginWithEmailAndPasswordRequested event,
     Emitter<AuthState> emit,
   ) async {
@@ -117,5 +121,4 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         return 'Error de autenticación: $code';
     }
   }
-
 }

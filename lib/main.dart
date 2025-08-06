@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
           title: 'APP Tiendas',
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
-          home: const SplashScreen(),
+          home: const WelcomeScreen(),
         ),
       ),
     );
