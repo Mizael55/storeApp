@@ -1,6 +1,9 @@
-import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:store_app/constants/categories.dart';
+import 'package:store_app/theme/app_colors.dart';
+import 'package:store_app/utils/custom_category_dropdown.dart';
+import 'package:store_app/utils/custom_text_input.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -14,37 +17,41 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final _nameController = TextEditingController();
   final _priceController = TextEditingController();
   final _descriptionController = TextEditingController();
-  String _selectedCategory = 'Electrónica';
   File? _selectedImage;
-
-  Future<void> _pickImage(ImageSource source) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: source);
-
-    if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-      });
-    }
-  }
+  String _selectedCategory = productCategories.first.value;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nuevo Producto',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          'Nuevo Producto',
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
+        ),
         centerTitle: true,
+        backgroundColor: AppColors.background,
         elevation: 0,
+        scrolledUnderElevation: 1,
+        iconTheme: const IconThemeData(color: AppColors.textPrimary),
         actions: [
           IconButton(
-            icon: const Icon(Icons.save_rounded, size: 28),
-            onPressed: _saveProduct,
+            icon: Icon(
+              Icons.save_rounded,
+              size: 28,
+              color: AppColors.secondary,
+            ),
+            onPressed: () {}, // La lógica se manejará desde el widget padre
           ),
         ],
       ),
+      backgroundColor: AppColors.background,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         child: Form(
           key: _formKey,
           child: Column(
@@ -52,215 +59,148 @@ class _AddProductScreenState extends State<AddProductScreen> {
             children: [
               // Sección de imagen
               GestureDetector(
-                onTap: () => _showImagePickerDialog(),
+                onTap: () {
+                  
+                }, // Lógica manejada externamente
                 child: Container(
-                  height: 180,
+                  height: 200,
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(12),
+                    color: AppColors.cardBackground,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                     border: Border.all(
-                      color: Colors.grey.shade300,
+                      color: AppColors.inputBorder.withOpacity(0.5),
                       width: 1.5,
                     ),
                   ),
-                  child: _selectedImage == null
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.add_a_photo,
-                                size: 40, color: Colors.grey.shade500),
-                            const SizedBox(height: 8),
-                            Text('Agregar imagen',
-                                style: TextStyle(
-                                    color: Colors.grey.shade600,
-                                    fontSize: 16)),
-                          ],
-                        )
-                      : ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.file(
-                            _selectedImage!,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
+                  child:
+                      _selectedImage == null
+                          ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.add_photo_alternate_outlined,
+                                size: 48,
+                                color: AppColors.textSecondary,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                'Agregar imagen',
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
+                          )
+                          : ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: Image.file(
+                              _selectedImage!,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            ),
                           ),
-                        ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
 
               // Campo de nombre
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: 'Nombre del producto',
-                  prefixIcon: Icon(Icons.shopping_bag_outlined,
-                      color: Theme.of(context).primaryColor),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+              Text(
+                'Información del Producto',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingrese un nombre';
-                  }
-                  return null;
-                },
+              ),
+              const SizedBox(height: 16),
+
+              CustomTextInput(
+                controller: _nameController,
+                label: 'Nombre del producto',
+                prefixIcon: Icons.shopping_bag_outlined,
               ),
               const SizedBox(height: 16),
 
               // Campo de precio
-              TextFormField(
+              CustomTextInput(
                 controller: _priceController,
-                decoration: InputDecoration(
-                  labelText: 'Precio',
-                  prefixIcon: Icon(Icons.attach_money_outlined,
-                      color: Theme.of(context).primaryColor),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingrese un precio';
-                  }
-                  if (double.tryParse(value) == null) {
-                    return 'Ingrese un número válido';
-                  }
-                  return null;
-                },
+                label: 'Precio',
+                inputType: CustomInputType.number,
+                prefixIcon: Icons.attach_money_outlined,
               ),
               const SizedBox(height: 16),
 
-              // Selector de categoría
-              DropdownButtonFormField<String>(
+              // Selector de categoría y agrega que diga selecciona una categoría
+              CustomCategoryDropdown(
                 value: _selectedCategory,
-                items: const [
-                  DropdownMenuItem(
-                    value: 'Electrónica',
-                    child: Text('Electrónica'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Ropa',
-                    child: Text('Ropa'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Hogar',
-                    child: Text('Hogar'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Deportes',
-                    child: Text('Deportes'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Juguetes',
-                    child: Text('Juguetes'),
-                  ),
-                ],
                 onChanged: (value) {
-                  setState(() {
-                    _selectedCategory = value!;
-                  });
+                  if (value != null) {
+                    setState(() {
+                      _selectedCategory = value;
+                    });
+                  }
                 },
-                decoration: InputDecoration(
-                  labelText: 'Categoría',
-                  prefixIcon: Icon(Icons.category_outlined,
-                      color: Theme.of(context).primaryColor),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
+                label: 'Categoría',
               ),
               const SizedBox(height: 16),
 
               // Campo de descripción
-              TextFormField(
+              CustomTextInput(
                 controller: _descriptionController,
-                decoration: InputDecoration(
-                  labelText: 'Descripción',
-                  alignLabelWithHint: true,
-                  prefixIcon: Icon(Icons.description_outlined,
-                      color: Theme.of(context).primaryColor),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
+                label: 'Descripción',
+                prefixIcon: Icons.description_outlined,
                 maxLines: 3,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
 
               // Botón de guardar
               ElevatedButton(
-                onPressed: _saveProduct,
+                onPressed: () {
+                  if (_formKey.currentState?.validate() ?? false) {
+                    // Aquí se manejará la lógica de guardar el producto
+                    // Por ejemplo, llamar a un método del widget padre o bloc
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Producto guardado exitosamente'),
+                      ),
+                    );
+                  }else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Por favor, completa todos los campos'),
+                      ),
+                    );
+                  }
+                }, // Lógica manejada externamente
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.secondary,
+                  foregroundColor: AppColors.buttonText,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 2,
+                ),
+                child: Text(
+                  'Guardar Producto',
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   ),
                 ),
-                child: const Text('Guardar Producto',
-                    style: TextStyle(fontSize: 16)),
               ),
+              const SizedBox(height: 24),
             ],
           ),
         ),
       ),
     );
-  }
-
-  void _showImagePickerDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Seleccionar imagen'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.photo_library),
-                  title: const Text('Galería'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _pickImage(ImageSource.gallery);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.camera_alt),
-                  title: const Text('Cámara'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _pickImage(ImageSource.camera);
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _saveProduct() {
-    if (_formKey.currentState!.validate()) {
-      if (_selectedImage == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Por favor seleccione una imagen')),
-        );
-        return;
-      }
-
-      // Aquí iría la lógica para guardar el producto
-      // con la imagen seleccionada (_selectedImage)
-      
-      // Mostrar mensaje de éxito
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Producto guardado exitosamente')),
-      );
-
-      // Regresar a la pantalla anterior
-      Navigator.pop(context);
-    }
   }
 
   @override

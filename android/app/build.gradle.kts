@@ -11,7 +11,7 @@ plugins {
 android {
     namespace = "com.example.store_app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -36,7 +36,7 @@ android {
         create("release") {
             storeFile = file("/Users/mizaelsoler/client-proyect/storeApp/my-release-key.jks")
             storePassword = "19980923"
-            keyAlias = "my-release-key"
+            keyAlias = "my-key-alias"
             keyPassword = "19980923"
         }
     }

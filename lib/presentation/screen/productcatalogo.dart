@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:store_app/data/db.dart';
-import 'package:store_app/presentation/screen/addproduct.dart';
 import 'package:store_app/presentation/screen/cart.dart';
 import 'package:store_app/presentation/screen/details.dart';
 import 'package:store_app/widgets/productcard.dart';
+
+import '../../utils/utils.dart';
 
 class ProductCatalogScreen extends StatefulWidget {
   const ProductCatalogScreen({super.key});
@@ -17,9 +18,12 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredProducts = selectedCategory == 'Todos'
-        ? dummyProducts
-        : dummyProducts.where((product) => product.category == selectedCategory).toList();
+    final filteredProducts =
+        selectedCategory == 'Todos'
+            ? dummyProducts
+            : dummyProducts
+                .where((product) => product.category == selectedCategory)
+                .toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -75,51 +79,32 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
                 childAspectRatio: 0.70,
               ),
               itemCount: filteredProducts.length,
-              itemBuilder: (context, index) => ProductCard(
-                product: filteredProducts[index],
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ProductDetailScreen(
-                        product: filteredProducts[index],
-                        onProductUpdated: (updatedProduct) {
-                          setState(() {});
-                        },
-                        onProductDeleted: (deletedProductId) {
-                          setState(() {});
-                        },
-                      ),
-                    ),
-                  );
-                },
-              ),
+              itemBuilder:
+                  (context, index) => ProductCard(
+                    product: filteredProducts[index],
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => ProductDetailScreen(
+                                product: filteredProducts[index],
+                                onProductUpdated: (updatedProduct) {
+                                  setState(() {});
+                                },
+                                onProductDeleted: (deletedProductId) {
+                                  setState(() {});
+                                },
+                              ),
+                        ),
+                      );
+                    },
+                  ),
             ),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // Navegar a la pantalla de agregar producto
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddProductScreen()),
-          ).then((_) {
-            // Actualizar la lista si se agregó un nuevo producto
-            setState(() {});
-          });
-        },
-        backgroundColor: Colors.deepPurple,
-        foregroundColor: Colors.white,
-        elevation: 8,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: Colors.white, width: 2),
-        ),
-        label: const Text('Agregar Producto'),
-        icon: const Icon(Icons.add),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: CustomFloatingActionButton(context: context),
     );
   }
 }
@@ -264,15 +249,16 @@ class ProductSearchDelegate extends SearchDelegate {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ProductDetailScreen(
-                  product: product,
-                  onProductUpdated: (updatedProduct) {
-                    // Optionally handle product update here
-                  },
-                  onProductDeleted: (deletedProductId) {
-                    // Optionally handle product deletion here
-                  },
-                ),
+                builder:
+                    (context) => ProductDetailScreen(
+                      product: product,
+                      onProductUpdated: (updatedProduct) {
+                        // Optionally handle product update here
+                      },
+                      onProductDeleted: (deletedProductId) {
+                        // Optionally handle product deletion here
+                      },
+                    ),
               ),
             );
           },
