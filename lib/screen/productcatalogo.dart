@@ -34,6 +34,7 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
         centerTitle: true,
         backgroundColor: Colors.deepPurple,
         elevation: 10,
+        // ignore: deprecated_member_use
         shadowColor: Colors.deepPurple.withOpacity(0.5),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
@@ -82,6 +83,12 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
                     MaterialPageRoute(
                       builder: (context) => ProductDetailScreen(
                         product: filteredProducts[index],
+                        onProductUpdated: (updatedProduct) {
+                          setState(() {});
+                        },
+                        onProductDeleted: (deletedProductId) {
+                          setState(() {});
+                        },
                       ),
                     ),
                   );
@@ -257,7 +264,15 @@ class ProductSearchDelegate extends SearchDelegate {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ProductDetailScreen(product: product),
+                builder: (context) => ProductDetailScreen(
+                  product: product,
+                  onProductUpdated: (updatedProduct) {
+                    // Optionally handle product update here
+                  },
+                  onProductDeleted: (deletedProductId) {
+                    // Optionally handle product deletion here
+                  },
+                ),
               ),
             );
           },

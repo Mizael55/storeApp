@@ -1,7 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:store_app/screen/splash.dart';
 
-void main() => runApp(const MyApp());
+import 'package:flutter/material.dart';
+import 'screen/screen.dart';
+import 'theme/app_theme.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -9,15 +14,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowMaterialGrid: false,
-      title: 'APP Tiendas',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: const SplashScreen(),
       debugShowCheckedModeBanner: false,
+      title: 'APP Tiendas',
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      home: const SplashScreen(),
     );
   }
 }
-
