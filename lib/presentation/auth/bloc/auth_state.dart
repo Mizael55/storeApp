@@ -20,6 +20,15 @@ class AuthSignUpSuccess extends AuthState {
   List<Object> get props => [user];
 }
 
+class AuthLoginSuccess extends AuthState {
+  final UserModel user;
+  
+  const AuthLoginSuccess(this.user);
+
+  @override
+  List<Object> get props => [user];
+}
+
 class AuthFailure extends AuthState {
   final String error;
   

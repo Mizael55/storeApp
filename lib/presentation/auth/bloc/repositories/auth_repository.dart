@@ -112,6 +112,62 @@ class AuthRepository {
     }
   }
 
+  Future<UserModel> loginWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final doc =
+          await _firestore
+              .collection('users')
+              .doc(userCredential.user!.uid)
+              .get();
+
+      if (!doc.exists) {
+        throw Exception('Usuario no encontrado en la base de datos');
+      }
+
+      return UserModel.fromMap(doc.data()!);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<UserModel> loginWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) throw Exception('Cancelado por el usuario');
+
+      final googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final userCredential = await _firebaseAuth.signInWithCredential(
+        credential,
+      );
+      final userDoc =
+          await _firestore
+              .collection('users')
+              .doc(userCredential.user!.uid)
+              .get();
+
+      if (!userDoc.exists) {
+        throw Exception('Usuario de Google no registrado');
+      }
+
+      return UserModel.fromMap(userDoc.data()!);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   String _mapFirebaseError(String code) {
     switch (code) {
       case 'account-exists-with-different-credential':
